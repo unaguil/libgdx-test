@@ -6,9 +6,13 @@ import java.io.FileReader;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Input.Keys;
 
@@ -55,11 +59,16 @@ public class MyGdxGame extends ApplicationAdapter {
 	private static final int MAP_HEIGHT = 25;
 	private static final int TILE_SIZE = 16;
 
+	private Stage stage;
+	private Viewport viewport;
+	private Camera camera;
 	private SpriteBatch batch;
 	private Texture ground;
 	private Texture tree;
 	private Texture mountain;
 	private Texture player;
+
+	private BitmapFont font;
 
 	// array para guardar la información del mapa
 	char[][] mapa = new char[MAP_WIDTH][MAP_HEIGHT];
@@ -67,6 +76,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	// posición inicial del personaje en celdas del mapa
 	private int playerRow = 1;
 	private int playerColumn = 1;
+	private int flagCounter = 0;
 	
 	@Override
 	public void create() {
@@ -76,6 +86,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		tree = new Texture("arbol.png");
 		mountain = new Texture("montana.png");
 		player = new Texture("personaje.png");
+
+		// cargamos el bitmap de la fuente desde los recursos
+		font = new BitmapFont(Gdx.files.internal("arial.fnt"), false);
 
 		// cargamos el fichero en el array en memoria
 		try (BufferedReader reader = new BufferedReader(new FileReader("mapa.txt"))) {
@@ -92,6 +105,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		// registramos el escuchador de teclado
 		Gdx.input.setInputProcessor(new KeyboardProcessor());
+
 	}
 
 	@Override
@@ -130,6 +144,10 @@ public class MyGdxGame extends ApplicationAdapter {
 		// dibujamos el personaje en su posición actual
 		batch.draw(player, columnToX(playerColumn), rowToY(playerRow));
 
+		// dibujamos el texto en pantalla
+		// en una posición situada a la derecha del mapa
+		String counterLabel = String.format("%d bandera(s)", flagCounter);
+		font.draw(batch, counterLabel, MAP_WIDTH * TILE_SIZE + 20, Gdx.graphics.getHeight() - 20);
 		batch.end(); // esto es necesario para terminar el dibujado
 	}
 
@@ -143,7 +161,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		return column * TILE_SIZE;
 	}
 
-	// indica si posición indicada del mapa es válida para el personaje
+	// determina si posición indicada del mapa es válida para el personaje
 	public boolean isValid(int row, int column) {
 		return mapa[row][column] == '#';
 	}
