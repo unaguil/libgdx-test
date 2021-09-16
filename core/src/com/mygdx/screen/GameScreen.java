@@ -2,6 +2,7 @@ package com.mygdx.screen;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.io.FileReader;
 
 import com.badlogic.gdx.Game;
@@ -11,8 +12,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import java.util.Random;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Input.Keys;
@@ -51,16 +52,22 @@ public class GameScreen extends ScreenAdapter {
 				playerColumn = previousColumn;
 			}
 
+			if (mapa[playerRow][playerColumn] == 'F') {
+				mapa[playerRow][playerColumn] = '#';
+				flagCounter++;
+			}
+
 			return false;
 		}
 	}
 
 	private static final String SCREEN_NAME = "Game Screen";
-	private static final int SCREEN_WIDTH = 800;
-	private static final int SCREEN_HEIGHT = 600;
-	private static final int MAP_WIDTH = 25;
-	private static final int MAP_HEIGHT = 25;
-	private static final int TILE_SIZE = 16;
+	private static final int GAME_WIDTH = 800;
+	private static final int GAME_HEIGHT = 600;
+	private static final int TILE_SIZE = 40;
+
+	private static final int MAP_WIDTH = TILE_SIZE * 15;
+	private static final int MAP_HEIGHT = TILE_SIZE * 15;
 
 	private Game game;
 
@@ -70,11 +77,15 @@ public class GameScreen extends ScreenAdapter {
 	private Texture tree;
 	private Texture mountain;
 	private Texture player;
+	private Texture flag;
+	private Texture panel;
 
 	private BitmapFont font;
 
 	// array para guardar la información del mapa
-	char[][] mapa = new char[MAP_WIDTH][MAP_HEIGHT];
+	// establecemos el número de filas de forma temporal
+	private int mapRows = 10;
+	char[][] mapa = new char[mapRows][];
 
 	// posición inicial del personaje en celdas del mapa
 	private int playerRow = 1;
@@ -86,13 +97,15 @@ public class GameScreen extends ScreenAdapter {
 
 		this.game = game;
 
-		viewport = new ScreenViewport();
+		viewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT);
 
 		batch = new SpriteBatch();
 		ground = new Texture("suelo.png");
 		tree = new Texture("arbol.png");
 		mountain = new Texture("montana.png");
 		player = new Texture("personaje.png");
+		panel = new Texture("panel.png");
+		flag = new Texture("bandera.png");
 
 		// cargamos el bitmap de la fuente desde los recursos
 		font = new BitmapFont(Gdx.files.internal("arial.fnt"), false);
@@ -103,6 +116,12 @@ public class GameScreen extends ScreenAdapter {
 
 			int contadorLinea = 0;
 			while ((linea = reader.readLine()) != null) {
+				if (contadorLinea >= mapRows) {
+					// extendemos el array 5 posiciones más
+					mapa = Arrays.copyOf(mapa, mapRows + 5);
+					mapRows += 5;
+				}
+
 				mapa[contadorLinea] = linea.toCharArray();
 				contadorLinea++;
 			}
@@ -113,6 +132,14 @@ public class GameScreen extends ScreenAdapter {
 		// registramos el escuchador de teclado
 		Gdx.input.setInputProcessor(new KeyboardProcessor());
 
+		Random random = new Random();
+		// colocamos 5 banderas al azar
+		for (int i = 0; i < 5; i++) {
+			int row = random.nextInt(13) + 1;
+			int column = random.nextInt(13) + 1;
+
+			mapa[row][column] = 'F';
+		}
 	}
 
 	@Override
@@ -128,8 +155,8 @@ public class GameScreen extends ScreenAdapter {
 
 		// aqui vamos a dibujar en pantalla cada baldosa
 		// desde la esquina superior izquierda
-		for (int i = 0; i < MAP_HEIGHT; i++) {
-			for (int j = 0; j < MAP_WIDTH; j++) {
+		for (int i = 0; i < mapa.length && mapa[i] != null; i++) {
+			for (int j = 0; j < mapa[i].length; j++) {
 				// posición actual de dibujado
 				// tenemos en cuenta que el eje y está invertido
 				// además, la esquina de dibujado de la imagen es la inferior izquierda
@@ -137,15 +164,19 @@ public class GameScreen extends ScreenAdapter {
 				int y = rowToY(i);
 				
 				switch (mapa[i][j]) {
-					case '#': 	batch.draw(ground, x, y);
+					case '#': 	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
 								break;
 
-					case 'M':	batch.draw(ground, x, y);
-								batch.draw(mountain, x, y);
+					case 'M':	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
+								batch.draw(mountain, x, y, TILE_SIZE, TILE_SIZE);
 								break;
 
-					case 'A':	batch.draw(ground, x, y);
-								batch.draw(tree, x, y);
+					case 'A':	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
+								batch.draw(tree, x, y, TILE_SIZE, TILE_SIZE);
+								break;
+
+					case 'F':	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
+								batch.draw(flag, x, y, TILE_SIZE, TILE_SIZE);
 								break;
 
 					default: 	break;
@@ -154,12 +185,15 @@ public class GameScreen extends ScreenAdapter {
 		}
 		
 		// dibujamos el personaje en su posición actual
-		batch.draw(player, columnToX(playerColumn), rowToY(playerRow));
+		batch.draw(player, columnToX(playerColumn), rowToY(playerRow), TILE_SIZE, TILE_SIZE);
+
+		batch.draw(panel, MAP_WIDTH, 0);
 
 		// dibujamos el texto en pantalla
 		// en una posición situada a la derecha del mapa
-		String counterLabel = String.format("%d bandera(s)", flagCounter);
-		font.draw(batch, counterLabel, MAP_WIDTH * TILE_SIZE + 20, Gdx.graphics.getHeight() - 20);
+		String counterLabel = String.format("%d flags", flagCounter);
+		font.draw(batch, counterLabel, MAP_WIDTH + 50, Gdx.graphics.getHeight() - 95);
+		
 		batch.end(); // esto es necesario para terminar el dibujado
 	}
 
@@ -175,7 +209,7 @@ public class GameScreen extends ScreenAdapter {
 
 	// determina si posición indicada del mapa es válida para el personaje
 	public boolean isValid(int row, int column) {
-		return mapa[row][column] == '#';
+		return mapa[row][column] == '#' || mapa[row][column] == 'F';
 	}
 	
 	@Override
@@ -193,6 +227,6 @@ public class GameScreen extends ScreenAdapter {
 	public void resize(int width, int height) {
 		Gdx.app.log(SCREEN_NAME, String.format("Screen: %d x %d", width, height));
 		viewport.update(width, height);
-		viewport.getCamera().position.set(width / 2f, height / 2f, 0);
+		viewport.getCamera().position.set(GAME_WIDTH / 2f, GAME_HEIGHT / 2f, 0);
 	}
 }
