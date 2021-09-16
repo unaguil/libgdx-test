@@ -1,22 +1,23 @@
-package com.mygdx.game;
+package com.mygdx.screen;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.FileReader;
 
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Input.Keys;
 
-public class MyGdxGame extends ApplicationAdapter {
+public class GameScreen extends ScreenAdapter {
 
 	class KeyboardProcessor extends InputAdapter {
 
@@ -54,14 +55,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 	}
 
-	private static final String APP_NAME = "Test app";
+	private static final String SCREEN_NAME = "Game Screen";
+	private static final int SCREEN_WIDTH = 800;
+	private static final int SCREEN_HEIGHT = 600;
 	private static final int MAP_WIDTH = 25;
 	private static final int MAP_HEIGHT = 25;
 	private static final int TILE_SIZE = 16;
 
-	private Stage stage;
+	private Game game;
+
 	private Viewport viewport;
-	private Camera camera;
 	private SpriteBatch batch;
 	private Texture ground;
 	private Texture tree;
@@ -78,9 +81,13 @@ public class MyGdxGame extends ApplicationAdapter {
 	private int playerColumn = 1;
 	private int flagCounter = 0;
 	
-	@Override
-	public void create() {
-		Gdx.app.log(APP_NAME, "App creada");
+	public GameScreen(Game game) {
+		Gdx.app.log(SCREEN_NAME, "Iniciando screen principal del juego");
+
+		this.game = game;
+
+		viewport = new ScreenViewport();
+
 		batch = new SpriteBatch();
 		ground = new Texture("suelo.png");
 		tree = new Texture("arbol.png");
@@ -100,7 +107,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				contadorLinea++;
 			}
 		} catch (IOException e) {
-			Gdx.app.log(APP_NAME, "No se ha podido cargar el fichero de mapa");
+			Gdx.app.log(SCREEN_NAME, "No se ha podido cargar el fichero de mapa");
 		}
 
 		// registramos el escuchador de teclado
@@ -109,9 +116,14 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	@Override
-	public void render() {
+	public void render(float delta) {
 		// borrado de pantalla para empezar a dibujar el fotograma
 		ScreenUtils.clear(0, 0, 0, 1);
+
+		// actualizar la cámara y establecerla antes de dibujar
+		viewport.getCamera().update();
+		batch.setProjectionMatrix(viewport.getCamera().combined);
+
 		batch.begin(); // requerido para empezar a dibujar
 
 		// aqui vamos a dibujar en pantalla cada baldosa
@@ -168,7 +180,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	
 	@Override
 	public void dispose() {
-		Gdx.app.log(APP_NAME, "Deteniendo el app");
+		Gdx.app.log(SCREEN_NAME, "Destruyendo la screen principal del juego");
 		batch.dispose();
 		
 		ground.dispose();
@@ -179,16 +191,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	@Override
 	public void resize(int width, int height) {
-		Gdx.app.log(APP_NAME, String.format("Tamaño pantalla: %d x %d", width, height));
-	}
-
-	@Override
-	public void pause() {
-		Gdx.app.log(APP_NAME, "App pausada");
-	}
-
-	@Override
-	public void resume() {
-		Gdx.app.log(APP_NAME, "App restaurada");
+		Gdx.app.log(SCREEN_NAME, String.format("Screen: %d x %d", width, height));
+		viewport.update(width, height);
+		viewport.getCamera().position.set(width / 2f, height / 2f, 0);
 	}
 }
