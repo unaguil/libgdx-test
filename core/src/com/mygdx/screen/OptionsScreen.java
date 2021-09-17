@@ -1,6 +1,9 @@
 package com.mygdx.screen;
 
 import com.badlogic.gdx.Gdx;
+
+import java.lang.StackWalker.Option;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -8,14 +11,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-// Esta clase define la funcionalidad de la pantalla del
-// menú principal
-public class MainScreen extends ScreenAdapter {
+// Esta clase define la funcionalidad de la pantalla
+// de opciones del juego
+public class OptionsScreen extends ScreenAdapter {
 
     // referencia a la aplicación
     // se usa para poder cambiar de pantallas
@@ -24,10 +26,8 @@ public class MainScreen extends ScreenAdapter {
     private Skin skin;
     private Stage stage;
     private Table table;
-    private SpriteBatch batch;
-    private Texture background;
 
-    public MainScreen(Game game) {
+    public OptionsScreen(Game game) {
         this.game = game;
 
         // se hace uso del grafo de escena
@@ -53,51 +53,22 @@ public class MainScreen extends ScreenAdapter {
         // creamos un widget de tipo botón con el skin cargado anteriormente
         // el widget se añade a la tabla con unos tamaños mínimos y con un
         // espacio (padding) superior e inferior para situarlo un poco
-        final TextButton startGameButton = new TextButton("Start game", skin);
-		table.add(startGameButton).minWidth(200).padTop(200).padBottom(25);
+        final CheckBox fullScreenCheck = new CheckBox("Fullscreen", skin);
+		table.add(fullScreenCheck).minWidth(200).padTop(100).padBottom(25);
 
-        // escuchador para el click del botón "Start"
-		startGameButton.addListener(new ChangeListener() {
-
-			public void changed (ChangeEvent event, Actor actor) {
-                // como resultado del click se destruye la pantalla actual
-                // y se establece la del juego como pantalla visible
-                MainScreen.this.dispose();
-                MainScreen.this.game.setScreen(new GameScreen(MainScreen.this.game));
-			}
-            
-		});
-
-        // añadimos un botón para cambiar a la pantalla de opciones
-        final TextButton optionsButton = new TextButton("Options", skin);
-        table.row();
-		table.add(optionsButton).minWidth(200).padBottom(25);
-
-		optionsButton.addListener(new ChangeListener() {
-
-			public void changed (ChangeEvent event, Actor actor) {
-                MainScreen.this.dispose();
-                MainScreen.this.game.setScreen(new OptionsScreen(MainScreen.this.game));
-			}
-            
-		});
-
-        // añadimos un botón para salir de la aplicación
-        final TextButton exitButton = new TextButton("Exit game", skin);
+        // añadimos un segundo botón para volver al menú principal
+        final TextButton exitButton = new TextButton("Return", skin);
         table.row();
 		table.add(exitButton).minWidth(200);
 
 		exitButton.addListener(new ChangeListener() {
 
 			public void changed (ChangeEvent event, Actor actor) {
-				Gdx.app.exit(); // cierra la aplicación completamente
+				OptionsScreen.this.dispose();
+                OptionsScreen.this.game.setScreen(new MainScreen(OptionsScreen.this.game));
 			}
             
 		});
-
-        // creamos un batch para pintar el fondo de la pantalla
-        batch = new SpriteBatch();
-        background = new Texture("background.jpg");
     }
 
     // este método actualiza el viewport cuando se ajusta
@@ -111,11 +82,6 @@ public class MainScreen extends ScreenAdapter {
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
 
-        // pintamos primer el fondo directamente
-        batch.begin();
-        batch.draw(background, 0, 0, 800, 600);
-        batch.end();
-
         // aquí hacemos uso del grafo de escena para
         // los widgets
         stage.act(delta);
@@ -128,7 +94,5 @@ public class MainScreen extends ScreenAdapter {
     public void dispose() {
         stage.dispose();
         skin.dispose();
-        background.dispose();
-        batch.dispose();
     }
 }
