@@ -1,9 +1,7 @@
 package com.mygdx.screen;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.io.FileReader;
+import java.nio.file.Paths;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.ScreenAdapter;
@@ -13,8 +11,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import java.util.Random;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.screen.gamemap.GameMap;
+import com.mygdx.screen.gamemap.GameMap.Direction;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Input.Keys;
 
@@ -24,37 +23,20 @@ public class GameScreen extends ScreenAdapter {
 
 		@Override
 		public boolean keyUp(int key) {
-			// se guardan las posiciones anteriores por si
-			// es necesario restaurar la posición
-			int previousRow = playerRow;
-			int previousColumn = playerColumn;
-
 			switch (key) {
-				case Keys.DOWN:		playerRow++;
+				case Keys.DOWN:		gameMap.move(Direction.DOWN);
 									break;
 				
-				case Keys.UP:		playerRow--;
+				case Keys.UP:		gameMap.move(Direction.UP);
 									break;
 
-				case Keys.RIGHT:	playerColumn++;
+				case Keys.RIGHT:	gameMap.move(Direction.RIGHT);
 									break;
 
-				case Keys.LEFT:		playerColumn--;
+				case Keys.LEFT:		gameMap.move(Direction.LEFT);
 									break;
 
 				default:			break;
-			}
-
-			// se comprueba la nueva posición en el mapa
-			// si es inválida se restaura la previa
-			if (!isValid(playerRow, playerColumn)) {
-				playerRow = previousRow;
-				playerColumn = previousColumn;
-			}
-
-			if (mapa[playerRow][playerColumn] == 'F') {
-				mapa[playerRow][playerColumn] = '#';
-				flagCounter++;
 			}
 
 			return false;
@@ -82,15 +64,8 @@ public class GameScreen extends ScreenAdapter {
 
 	private BitmapFont font;
 
-	// array para guardar la información del mapa
-	// establecemos el número de filas de forma temporal
-	private int mapRows = 10;
-	char[][] mapa = new char[mapRows][];
-
-	// posición inicial del personaje en celdas del mapa
-	private int playerRow = 1;
-	private int playerColumn = 1;
-	private int flagCounter = 0;
+	// mapa de juego
+	private GameMap gameMap = new GameMap();
 	
 	public GameScreen(Game game) {
 		Gdx.app.log(SCREEN_NAME, "Iniciando screen principal del juego");
@@ -100,46 +75,26 @@ public class GameScreen extends ScreenAdapter {
 		viewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT);
 
 		batch = new SpriteBatch();
-		ground = new Texture("suelo.png");
-		tree = new Texture("arbol.png");
-		mountain = new Texture("montana.png");
-		player = new Texture("personaje.png");
+		ground = new Texture("gamemap/ground.png");
+		tree = new Texture("gamemap/tree.png");
+		mountain = new Texture("gamemap/mountain.png");
+		flag = new Texture("gamemap/flag.png");
+		player = new Texture("gamemap/player.png");
+
 		panel = new Texture("panel.png");
-		flag = new Texture("bandera.png");
+		
+		// se carga la información del mapa desde fichero 
+		try {
+			gameMap.loadFile(Paths.get("gamemap/mapinfo.txt"));
+		} catch (IOException e) {
+			Gdx.app.log(SCREEN_NAME, "Could not load map file information");
+		}
 
 		// cargamos el bitmap de la fuente desde los recursos
 		font = new BitmapFont(Gdx.files.internal("arial.fnt"), false);
 
-		// cargamos el fichero en el array en memoria
-		try (BufferedReader reader = new BufferedReader(new FileReader("mapa.txt"))) {
-			String linea = null;
-
-			int contadorLinea = 0;
-			while ((linea = reader.readLine()) != null) {
-				if (contadorLinea >= mapRows) {
-					// extendemos el array 5 posiciones más
-					mapa = Arrays.copyOf(mapa, mapRows + 5);
-					mapRows += 5;
-				}
-
-				mapa[contadorLinea] = linea.toCharArray();
-				contadorLinea++;
-			}
-		} catch (IOException e) {
-			Gdx.app.log(SCREEN_NAME, "No se ha podido cargar el fichero de mapa");
-		}
-
 		// registramos el escuchador de teclado
 		Gdx.input.setInputProcessor(new KeyboardProcessor());
-
-		Random random = new Random();
-		// colocamos 5 banderas al azar
-		for (int i = 0; i < 5; i++) {
-			int row = random.nextInt(13) + 1;
-			int column = random.nextInt(13) + 1;
-
-			mapa[row][column] = 'F';
-		}
 	}
 
 	@Override
@@ -155,43 +110,45 @@ public class GameScreen extends ScreenAdapter {
 
 		// aqui vamos a dibujar en pantalla cada baldosa
 		// desde la esquina superior izquierda
-		for (int i = 0; i < mapa.length && mapa[i] != null; i++) {
-			for (int j = 0; j < mapa[i].length; j++) {
+		for (int row = 0; row < gameMap.getRows(); row++) {
+			for (int column = 0; column < gameMap.getColumns(); column++) {
 				// posición actual de dibujado
 				// tenemos en cuenta que el eje y está invertido
 				// además, la esquina de dibujado de la imagen es la inferior izquierda
-				int x = columnToX(j);
-				int y = rowToY(i);
+				int x = columnToX(column);
+				int y = rowToY(row);
 				
-				switch (mapa[i][j]) {
-					case '#': 	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
-								break;
+				switch (gameMap.getCellType(row, column)) {
+					case GROUND:	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
+									break;
 
-					case 'M':	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
-								batch.draw(mountain, x, y, TILE_SIZE, TILE_SIZE);
-								break;
+					case MOUNTAIN:	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
+									batch.draw(mountain, x, y, TILE_SIZE, TILE_SIZE);
+									break;
 
-					case 'A':	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
-								batch.draw(tree, x, y, TILE_SIZE, TILE_SIZE);
-								break;
+					case TREE:		batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
+									batch.draw(tree, x, y, TILE_SIZE, TILE_SIZE);
+									break;
 
-					case 'F':	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
-								batch.draw(flag, x, y, TILE_SIZE, TILE_SIZE);
-								break;
+					case FLAG:		batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
+									batch.draw(flag, x, y, TILE_SIZE, TILE_SIZE);
+									break;
 
-					default: 	break;
+					default: 		break;
 				}
 			}
 		}
 		
 		// dibujamos el personaje en su posición actual
-		batch.draw(player, columnToX(playerColumn), rowToY(playerRow), TILE_SIZE, TILE_SIZE);
+		int playerXPos = columnToX(gameMap.getPlayer().getColumn());
+		int playerYPos = rowToY(gameMap.getPlayer().getRow());
+		batch.draw(player, playerXPos, playerYPos, TILE_SIZE, TILE_SIZE);
 
 		batch.draw(panel, MAP_WIDTH, 0);
 
 		// dibujamos el texto en pantalla
 		// en una posición situada a la derecha del mapa
-		String counterLabel = String.format("%d flags", flagCounter);
+		String counterLabel = String.format("%d flags", gameMap.getCapturedFlags());
 		font.draw(batch, counterLabel, MAP_WIDTH + 50, Gdx.graphics.getHeight() - 95);
 		
 		batch.end(); // esto es necesario para terminar el dibujado
@@ -205,11 +162,6 @@ public class GameScreen extends ScreenAdapter {
 	// convierte la columna a píxeles
 	public int columnToX(int column) {
 		return column * TILE_SIZE;
-	}
-
-	// determina si posición indicada del mapa es válida para el personaje
-	public boolean isValid(int row, int column) {
-		return mapa[row][column] == '#' || mapa[row][column] == 'F';
 	}
 	
 	@Override
