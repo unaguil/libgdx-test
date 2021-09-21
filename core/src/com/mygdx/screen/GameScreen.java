@@ -12,8 +12,9 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.screen.gamemap.GameMap;
-import com.mygdx.screen.gamemap.GameMap.Direction;
+import com.mygdx.screen.gamemap.Cell;
+import com.mygdx.screen.gamemap.GameController;
+import com.mygdx.screen.gamemap.GameController.Direction;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Input.Keys;
 
@@ -24,16 +25,16 @@ public class GameScreen extends ScreenAdapter {
 		@Override
 		public boolean keyUp(int key) {
 			switch (key) {
-				case Keys.DOWN:		gameMap.move(Direction.DOWN);
+				case Keys.DOWN:		gameController.move(Direction.DOWN);
 									break;
 				
-				case Keys.UP:		gameMap.move(Direction.UP);
+				case Keys.UP:		gameController.move(Direction.UP);
 									break;
 
-				case Keys.RIGHT:	gameMap.move(Direction.RIGHT);
+				case Keys.RIGHT:	gameController.move(Direction.RIGHT);
 									break;
 
-				case Keys.LEFT:		gameMap.move(Direction.LEFT);
+				case Keys.LEFT:		gameController.move(Direction.LEFT);
 									break;
 
 				default:			break;
@@ -65,7 +66,7 @@ public class GameScreen extends ScreenAdapter {
 	private BitmapFont font;
 
 	// mapa de juego
-	private GameMap gameMap = new GameMap();
+	private GameController gameController = new GameController();
 	
 	public GameScreen(Game game) {
 		Gdx.app.log(SCREEN_NAME, "Iniciando screen principal del juego");
@@ -85,7 +86,7 @@ public class GameScreen extends ScreenAdapter {
 		
 		// se carga la información del mapa desde fichero 
 		try {
-			gameMap.loadFile(Paths.get("gamemap/mapinfo.txt"));
+			gameController.loadFile(Paths.get("gamemap/mapinfo.txt"));
 		} catch (IOException e) {
 			Gdx.app.log(SCREEN_NAME, "Could not load map file information");
 		}
@@ -95,6 +96,8 @@ public class GameScreen extends ScreenAdapter {
 
 		// registramos el escuchador de teclado
 		Gdx.input.setInputProcessor(new KeyboardProcessor());
+
+		gameController.restartMap();
 	}
 
 	@Override
@@ -110,15 +113,15 @@ public class GameScreen extends ScreenAdapter {
 
 		// aqui vamos a dibujar en pantalla cada baldosa
 		// desde la esquina superior izquierda
-		for (int row = 0; row < gameMap.getRows(); row++) {
-			for (int column = 0; column < gameMap.getColumns(); column++) {
+		for (int row = 0; row < gameController.getRows(); row++) {
+			for (int column = 0; column < gameController.getColumns(); column++) {
 				// posición actual de dibujado
 				// tenemos en cuenta que el eje y está invertido
 				// además, la esquina de dibujado de la imagen es la inferior izquierda
 				int x = columnToX(column);
 				int y = rowToY(row);
 				
-				switch (gameMap.getCellType(row, column)) {
+				switch (gameController.getCellType(new Cell(row, column))) {
 					case GROUND:	batch.draw(ground, x, y, TILE_SIZE, TILE_SIZE);
 									break;
 
@@ -140,15 +143,16 @@ public class GameScreen extends ScreenAdapter {
 		}
 		
 		// dibujamos el personaje en su posición actual
-		int playerXPos = columnToX(gameMap.getPlayer().getColumn());
-		int playerYPos = rowToY(gameMap.getPlayer().getRow());
+		int playerXPos = columnToX(gameController.getPlayer().getColumn());
+		int playerYPos = rowToY(gameController.getPlayer().getRow());
 		batch.draw(player, playerXPos, playerYPos, TILE_SIZE, TILE_SIZE);
 
+		// dibujamos el panel de la derecha
 		batch.draw(panel, MAP_WIDTH, 0);
 
 		// dibujamos el texto en pantalla
 		// en una posición situada a la derecha del mapa
-		String counterLabel = String.format("%d flags", gameMap.getCapturedFlags());
+		String counterLabel = String.format("%d flags", gameController.getCapturedFlags());
 		font.draw(batch, counterLabel, MAP_WIDTH + 50, Gdx.graphics.getHeight() - 95);
 		
 		batch.end(); // esto es necesario para terminar el dibujado

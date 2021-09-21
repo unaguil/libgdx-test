@@ -4,6 +4,8 @@ import java.nio.file.Path;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.EnumSet;
 import java.io.FileReader;
 
 import java.util.Random;
@@ -12,7 +14,7 @@ import java.util.Random;
  * Clase que representa el mapa del juego con la información
  * del objeto contenido en cada casilla.
  */
-public class GameMap {
+public class GameController {
 
     // enumerado para representar el contenido de cada celda
     public enum CellType {
@@ -46,10 +48,10 @@ public class GameMap {
 	private CellType[][] mapData = new CellType[mapRows][];
 
     // información sobre el jugador en el mapa de juego
-    private Player player = new Player();
+    private Cell player = new Cell(0, 0);
 
     // contador de banderas recogidas en el mapa
-    private int flagCounter = 0;
+    private int flagCounter;
     
     // random para generar la posición de las banderas
     private Random random = new Random();
@@ -95,31 +97,84 @@ public class GameMap {
         return mapData[0].length;
     }
 
-    // obtiene el tipo de objeto que hay en la celda 
-    public CellType getCellType(int row, int column) {
-        return mapData[row][column];
+    // obtiene la posición del jugador
+    public Cell getPlayer() {
+        return player;
     }
 
-    // determina si la posición del jugador es válida
-	private boolean isValid() {
-		return mapData[player.getRow()][player.getColumn()] == CellType.GROUND 
-            || mapData[player.getRow()][player.getColumn()] == CellType.FLAG;
+    // obtiene el tipo de objeto que hay en la celda 
+    public CellType getCellType(Cell cell) {
+        return mapData[cell.getRow()][cell.getColumn()];
+    }
+
+    // establece el valor de la celda
+    private void setCellType(Cell cell, CellType cellType) {
+        mapData[cell.getRow()][cell.getColumn()] = cellType;
+    }
+
+    // determina si la posición indica es válida
+	private boolean isValid(Cell cell) {
+        Set<CellType> validCells = EnumSet.of(CellType.GROUND, CellType.FLAG);
+        return validCells.contains(getCellType(cell));
 	}
 
-    // añade n banderas aleatorias en el mapa
-    public void addRandomFlags() {
-        // colocamos 5 banderas al azar
-        for (int i = 0; i < 5; i++) {
-            int row = random.nextInt(13) + 1;
-            int column = random.nextInt(13) + 1;
-
-            mapData[row][column] = CellType.FLAG;
+    // elimina las banderas existentes en el mapa
+    private void clearMap() {
+        for (int row = 0; row < getRows(); row++) {
+            for (int column = 0; column < getColumns(); column++) {
+                Cell cell = new Cell(row, column);
+                if (getCellType(cell) == CellType.FLAG) {
+                    setCellType(cell, CellType.GROUND);
+                }
+            }
         }
     }
 
-    // obtiene la información sobre el jugador en el mapa
-    public Player getPlayer() {
-        return player;
+    // obtiene una celda aleatoria del mapa
+    public Cell getRandomCell() {
+        return new Cell(
+            random.nextInt(getRows()), 
+            random.nextInt(getColumns())
+        );
+    }
+
+    // añade n banderas aleatorias en el mapa
+    private void addRandomFlags(int numFlags) {
+        // colocamos 5 banderas al azar
+        // en posiciones donde no haya nada
+        while (numFlags > 0) {
+            Cell randomCell = getRandomCell();
+
+            // si la celda es de suelo se puede colocar la bandera
+            // y se indica que quedan menos banderas por colocar
+            if (getCellType(randomCell) == CellType.GROUND) {
+                setCellType(randomCell, CellType.FLAG);
+                numFlags--;
+            }
+        }
+    }
+
+    // situa aleatoriamente al jugador en el mapa
+    // en una celda que está vacía
+    private void initPlayer() {
+        boolean playerInit = false;
+        while (!playerInit) {
+            Cell randomCell = getRandomCell();
+
+            if (getCellType(randomCell) == CellType.GROUND) {
+                player = randomCell;
+                playerInit = true;
+            }
+        }
+    }
+
+    // reinicia el mapa de juego recolocando 5 banderas
+    // y la posición del jugador aleatoria
+    public void restartMap() {
+        clearMap();
+        addRandomFlags(5);
+        initPlayer();
+        flagCounter = 0;
     }
 
     // obtiene información sobre el número de banderas recogidas
@@ -135,20 +190,19 @@ public class GameMap {
 
     // intenta mover al jugador en la dirección indicada
     public void move(Direction d) {        
-        int newRow = player.getRow();
-        int newColumn = player.getColumn();
+        Cell newPosition = new Cell(player.getRow(), player.getColumn());
 
         switch (d) {
-            case DOWN:  newRow++;
+            case DOWN:  newPosition.setRow(newPosition.getRow() + 1);
                         break;
             
-            case UP:	newRow--;
+            case UP:	newPosition.setRow(newPosition.getRow() - 1);;
                         break;
 
-            case RIGHT:	newColumn++;
+            case RIGHT:	newPosition.setColumn(newPosition.getColumn() + 1);
                         break;
 
-            case LEFT:	newColumn--;
+            case LEFT:	newPosition.setColumn(newPosition.getColumn() - 1);
                         break;
 
             default:	break;
@@ -156,12 +210,15 @@ public class GameMap {
 
         // comprobar si la nueva localización es válida
         // y establecer el jugador en dicha posición
-        if (isValid()) {
-            player.setPosition(newRow, newColumn);
+        if (isValid(newPosition)) {
+            player.setRow(newPosition.getRow());
+            player.setColumn(newPosition.getColumn());
         }
 
-        if (mapData[player.getRow()][player.getColumn()] == CellType.FLAG) {
-            mapData[player.getRow()][player.getColumn()] = CellType.GROUND;
+        // comprobar si en la nueva posición del jugador hay una bandera
+        if (getCellType(player) == CellType.FLAG) {
+            // si hay bandera, eliminarla y aumentar el contador
+            setCellType(player, CellType.GROUND);
             flagCounter++;
         }
     }
