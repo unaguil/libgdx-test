@@ -16,10 +16,15 @@ public class MapActor extends Actor {
 	private static final int MAP_WIDTH = 600;
 	private static final int MAP_HEIGHT = 600;
 
+	// tamaño original de las texturas como recurso
+	private static final int TEXTURE_SIZE = 16;
+
     private GameController gameController;
     
     // referencias a los recursos gráficos cargados
     // como texturas de libGDX
+
+	private Texture tileSet;
     private TextureRegion ground;
 	private TextureRegion tree;
 	private TextureRegion mountain;
@@ -30,16 +35,24 @@ public class MapActor extends Actor {
         this.gameController = gameController;
 
         // carga de los recursos requeridos para el mapa
-        ground = new TextureRegion(new Texture("map/ground.png"));
-		tree = new TextureRegion(new Texture("map/tree.png"));
-		mountain = new TextureRegion(new Texture("map/mountain.png"));
-		flag = new TextureRegion(new Texture("map/flag.png"));
-		player = new TextureRegion(new Texture("map/player.png"));
+		tileSet = new Texture("map/map-tileset.png");
+        ground = getRegion(tileSet, 1, 3);
+		tree = getRegion(tileSet, 1, 6);
+		mountain = getRegion(tileSet, 2, 6);
+		flag = getRegion(tileSet, 7, 6);
+		player = getRegion(tileSet, 15, 6);
 
 		// establecemos un tamaño por defecto para el actor
 		setWidth(MAP_WIDTH);
 		setHeight(MAP_HEIGHT);
     }
+
+	// método para obtener la referencia a la región de la textura en
+	// el tileset de imágenes para el mapa
+	// el número de fila y columna corresponden con la posición en el tileset
+	private TextureRegion getRegion(Texture texture, int row, int column) {
+		return new TextureRegion(texture, TEXTURE_SIZE * (column - 1), TEXTURE_SIZE * (row - 1), TEXTURE_SIZE, TEXTURE_SIZE);
+	}
 
 	// convierte la columna a píxeles en X
 	private float columnToX(int column) {
