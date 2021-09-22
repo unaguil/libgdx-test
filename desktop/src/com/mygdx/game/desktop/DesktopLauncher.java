@@ -10,8 +10,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		
 		// establecemos el modo por defecto para la aplicación al inicio
-		config.width = 800;
-		config.height = 600;
+		config.width = MyGame.DEFAULT_WIDTH;
+		config.height = MyGame.DEFAULT_HEIGHT;
 		
 		new LwjglApplication(new MyGame(), config);
 	}

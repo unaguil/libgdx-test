@@ -3,15 +3,20 @@ package com.mygdx.screen.game;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.mygdx.controller.GameController;
 import com.mygdx.controller.GameController.Direction;
+import com.mygdx.game.MyGame;
+import com.mygdx.screen.MainScreen;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
 
 public class GameScreen extends ScreenAdapter {
@@ -33,10 +38,47 @@ public class GameScreen extends ScreenAdapter {
 				case Keys.LEFT:		gameController.move(Direction.LEFT);
 									break;
 
+				case Keys.ESCAPE:	showReturnDialog();
+									break;
+
+				case Keys.F:		toogleFullScreen();
+									break;
+
 				default:			break;
 			}
 
 			return false;
+		}
+
+		// muestra un diálogo para volver a la pantalla principal
+		private void showReturnDialog() {
+		
+			Dialog dialog = new Dialog("Warning", skin, "dialog") {
+				
+				@Override
+				public void result(Object obj) {
+					boolean result = (boolean) obj;
+					if (result) {
+						game.getScreen().dispose();
+						game.setScreen(new MainScreen(game));
+					}
+				}
+	
+			};
+			
+			dialog.text("Are you sure you want to return to main menu?");
+			dialog.button("Yes", true); //sends "true" as the result
+			dialog.button("No", false); //sends "false" as the result
+			dialog.show(stage);
+		}
+
+		// cambia el modo gráfico entre pantalla completa y ventana
+		private void toogleFullScreen() {
+			if (game.isFullScreen()) {
+				game.setWindowed();
+			} else {
+				game.setFullscreen();
+			}
 		}
 	}
 
@@ -44,14 +86,20 @@ public class GameScreen extends ScreenAdapter {
 	private static final int GAME_WIDTH = 800;
 	private static final int GAME_HEIGHT = 600;
 
+	private MyGame game;
+
+	private Skin skin;
 	private Stage stage;
 	private MapActor mapActor;
 	private PanelActor panelActor;
+	private Group gameGroup;
 
 	// mapa de juego
 	private GameController gameController = new GameController();
 	
-	public GameScreen(Game game) {
+	public GameScreen(MyGame game) {
+		this.game = game;
+
 		Gdx.app.log(SCREEN_NAME, "Iniciando screen principal del juego");
 
 		stage = new Stage(new ExtendViewport(GAME_WIDTH, GAME_HEIGHT));
@@ -63,17 +111,36 @@ public class GameScreen extends ScreenAdapter {
 			Gdx.app.log(SCREEN_NAME, "Could not load map file information");
 		}
 
+		// los widgets requieren definir con qué imágenes se pinta
+        // aquí se cargan los assets básicos para dibujarlos
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
+
+		// grupo para la pantalla de juego y el panel
+		gameGroup = new Group();
+
 		mapActor = new MapActor(gameController);
-		stage.addActor(mapActor);
+		gameGroup.addActor(mapActor);
 
-		panelActor = new PanelActor();
-		stage.addActor(panelActor);
+		panelActor = new PanelActor(gameController);
+		panelActor.setX(mapActor.getWidth());
+		gameGroup.addActor(panelActor);
 
-		// registramos el escuchador de teclado
-		Gdx.input.setInputProcessor(new KeyboardProcessor());
+		stage.addActor(gameGroup);
+
+		// establecemos un multiplexador para los eventos
+		// queremos capturar eventos con el stage y con el listener
+		// propio definido anteriormente
+		InputMultiplexer multiplexer = new InputMultiplexer();
+		multiplexer.addProcessor(stage);
+		multiplexer.addProcessor(new KeyboardProcessor());
+
+		// registramos el multiplexador de eventos como escuchador
+		Gdx.input.setInputProcessor(multiplexer);
 
 		gameController.restartMap();
 	}
+
+	float rotSpeed = 20.0f;
 
 	@Override
 	public void render(float delta) {

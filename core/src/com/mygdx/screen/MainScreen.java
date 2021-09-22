@@ -1,7 +1,6 @@
 package com.mygdx.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -12,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.MyGame;
 import com.mygdx.screen.game.GameScreen;
 
 // Esta clase define la funcionalidad de la pantalla del
@@ -20,7 +20,7 @@ public class MainScreen extends ScreenAdapter {
 
     // referencia a la aplicación
     // se usa para poder cambiar de pantallas
-    private final Game game;
+    private final MyGame game;
 
     private Skin skin;
     private Stage stage;
@@ -28,7 +28,7 @@ public class MainScreen extends ScreenAdapter {
     private SpriteBatch batch;
     private Texture background;
 
-    public MainScreen(Game game) {
+    public MainScreen(MyGame game) {
         this.game = game;
 
         // se hace uso del grafo de escena
@@ -37,16 +37,13 @@ public class MainScreen extends ScreenAdapter {
         Gdx.input.setInputProcessor(stage);
 
         // los widgets requieren definir con qué imágenes se pinta
-        // aquí se cargan los assets básicos para dibujar los botones
+        // aquí se cargan los assets básicos para dibujarlos
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         
         // la distribución de los widgets en la pantalla se van a
         // distribuir utilizando una tabla que ocupa todo el espacio
         table = new Table();
         table.setFillParent(true);
-
-        // podemos activar esta opción para ver líneas de ayuda
-        //table.setDebug(true);
 
         // añadimos la tabla al grafo de escena
         stage.addActor(table);

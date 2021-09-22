@@ -2,7 +2,6 @@ package com.mygdx.screen;
 
 import com.badlogic.gdx.Gdx;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -12,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.MyGame;
 
 // Esta clase define la funcionalidad de la pantalla
 // de opciones del juego
@@ -19,13 +19,13 @@ public class OptionsScreen extends ScreenAdapter {
 
     // referencia a la aplicación
     // se usa para poder cambiar de pantallas
-    private final Game game;
+    private final MyGame game;
 
     private Skin skin;
     private Stage stage;
     private Table table;
 
-    public OptionsScreen(Game game) {
+    public OptionsScreen(MyGame game) {
         this.game = game;
 
         // se hace uso del grafo de escena
@@ -51,6 +51,9 @@ public class OptionsScreen extends ScreenAdapter {
         final CheckBox fullScreenCheck = new CheckBox("Fullscreen", skin);
 		table.add(fullScreenCheck).minWidth(200).padTop(100).padBottom(25);
 
+        // establecemos el check box del modo gráfico al modo actual
+        fullScreenCheck.setChecked(game.isFullScreen());
+
         // añadimos un segundo botón para volver al menú principal
         final TextButton exitButton = new TextButton("Return", skin);
         table.row();
@@ -61,6 +64,14 @@ public class OptionsScreen extends ScreenAdapter {
 			public void changed (ChangeEvent event, Actor actor) {
 				OptionsScreen.this.dispose();
                 OptionsScreen.this.game.setScreen(new MainScreen(OptionsScreen.this.game));
+
+                if (fullScreenCheck.isChecked() && !OptionsScreen.this.game.isFullScreen()) {
+                    OptionsScreen.this.game.setFullscreen();
+                }
+
+                if (!fullScreenCheck.isChecked() && OptionsScreen.this.game.isFullScreen()) {
+                    OptionsScreen.this.game.setWindowed();
+                }
 			}
             
 		});
