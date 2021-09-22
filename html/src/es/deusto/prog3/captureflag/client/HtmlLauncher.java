@@ -1,4 +1,4 @@
-package es.deusto.captureflag.client;
+package es.deusto.prog3.captureflag.client;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
