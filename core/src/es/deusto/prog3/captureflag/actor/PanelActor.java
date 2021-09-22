@@ -48,7 +48,7 @@ public class PanelActor extends Actor {
 
         // dibujamos el texto en pantalla
 		// en una posición situada a la derecha del mapa
-		String counterLabel = String.format("%d flags", gameController.getCapturedFlags());
+		String counterLabel = gameController.getCapturedFlags() + " flags";
 		font.draw(batch, counterLabel, getX() + COUNTER_X_POS, getY() + COUNTER_Y_POS);
     }
 

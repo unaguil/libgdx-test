@@ -35,7 +35,7 @@ public class GameController {
                 }
             }
 
-            throw new IllegalArgumentException(String.format("No constant with text '%c' found", c));
+            throw new IllegalArgumentException("No constant found with value '" + c + "'");
         }
     }
 
