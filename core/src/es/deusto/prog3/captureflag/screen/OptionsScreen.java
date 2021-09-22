@@ -1,4 +1,4 @@
-package com.mygdx.screen;
+package es.deusto.prog3.captureflag.screen;
 
 import com.badlogic.gdx.Gdx;
 
@@ -11,7 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.MyGame;
+
+import es.deusto.prog3.captureflag.CaptureTheFlag;
 
 // Esta clase define la funcionalidad de la pantalla
 // de opciones del juego
@@ -19,13 +20,13 @@ public class OptionsScreen extends ScreenAdapter {
 
     // referencia a la aplicación
     // se usa para poder cambiar de pantallas
-    private final MyGame game;
+    private final CaptureTheFlag game;
 
     private Skin skin;
     private Stage stage;
     private Table table;
 
-    public OptionsScreen(MyGame game) {
+    public OptionsScreen(CaptureTheFlag game) {
         this.game = game;
 
         // se hace uso del grafo de escena

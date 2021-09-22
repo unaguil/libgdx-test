@@ -1,17 +1,19 @@
-package com.mygdx.game;
+package es.deusto.prog3.captureflag;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Game;
-import com.mygdx.screen.MainScreen;
 import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import es.deusto.prog3.captureflag.screen.MainScreen;
+
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 // esta clase representa la aplicación del juego
 // permite definir respuestas a distintos eventos
 // aunque solamente 
-public class MyGame extends Game {
+public class CaptureTheFlag extends Game {
 
     // resolución por defecto del juego en modo ventana
     public static final int DEFAULT_WIDTH = 800;
@@ -47,7 +49,7 @@ public class MyGame extends Game {
         DisplayMode displayMode = Gdx.graphics.getDisplayMode(currMonitor);
         
         if(!Gdx.graphics.setFullscreenMode(displayMode)) {
-            Gdx.app.log(MyGame.class.getName(), "Could not change screen mode to full screen");
+            Gdx.app.log(CaptureTheFlag.class.getName(), "Could not change screen mode to full screen");
         } else {
             fullScreen = true;
         }

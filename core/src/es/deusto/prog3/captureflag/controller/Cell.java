@@ -1,4 +1,4 @@
-package com.mygdx.controller;
+package es.deusto.prog3.captureflag.controller;
 
 // contiene la posición de una celda en el mapa
 public class Cell {

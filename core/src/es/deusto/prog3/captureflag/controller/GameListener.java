@@ -1,4 +1,4 @@
-package com.mygdx.controller;
+package es.deusto.prog3.captureflag.controller;
 
 // interfaz utilizada por el controlador del
 // juego para avisar de eventos

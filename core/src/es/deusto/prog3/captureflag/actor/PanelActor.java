@@ -1,10 +1,12 @@
-package com.mygdx.screen.game;
+package es.deusto.prog3.captureflag.actor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+
+import es.deusto.prog3.captureflag.controller.GameController;
+
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Texture;
-import com.mygdx.controller.GameController;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 

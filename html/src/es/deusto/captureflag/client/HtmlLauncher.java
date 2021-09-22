@@ -1,9 +1,10 @@
-package com.mygdx.game.client;
+package es.deusto.captureflag.client;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.mygdx.game.MyGame;
+
+import es.deusto.prog3.captureflag.CaptureTheFlag;
 
 public class HtmlLauncher extends GwtApplication {
 
@@ -11,12 +12,10 @@ public class HtmlLauncher extends GwtApplication {
         public GwtApplicationConfiguration getConfig () {
                 // Resizable application, uses available space in browser
                 return new GwtApplicationConfiguration(true);
-                // Fixed size application:
-                //return new GwtApplicationConfiguration(480, 320);
         }
 
         @Override
         public ApplicationListener createApplicationListener () {
-                return new MyGame();
+                return new CaptureTheFlag();
         }
 }

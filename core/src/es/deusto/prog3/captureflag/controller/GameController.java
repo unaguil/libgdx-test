@@ -1,4 +1,4 @@
-package com.mygdx.controller;
+package es.deusto.prog3.captureflag.controller;
 
 import java.nio.file.Path;
 import java.io.BufferedReader;
@@ -207,7 +207,7 @@ public class GameController {
             case DOWN:  newPosition.setRow(newPosition.getRow() + 1);
                         break;
             
-            case UP:	newPosition.setRow(newPosition.getRow() - 1);;
+            case UP:	newPosition.setRow(newPosition.getRow() - 1);
                         break;
 
             case RIGHT:	newPosition.setColumn(newPosition.getColumn() + 1);

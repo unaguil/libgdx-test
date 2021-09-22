@@ -1,4 +1,4 @@
-package com.mygdx.screen.game;
+package es.deusto.prog3.captureflag.screen;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -10,11 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.controller.GameController;
-import com.mygdx.controller.GameListener;
-import com.mygdx.controller.GameController.Direction;
-import com.mygdx.game.MyGame;
-import com.mygdx.screen.MainScreen;
+
+import es.deusto.prog3.captureflag.CaptureTheFlag;
+import es.deusto.prog3.captureflag.actor.MapActor;
+import es.deusto.prog3.captureflag.actor.PanelActor;
+import es.deusto.prog3.captureflag.controller.GameController;
+import es.deusto.prog3.captureflag.controller.GameListener;
+import es.deusto.prog3.captureflag.controller.GameController.Direction;
+
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
@@ -85,7 +88,7 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 
 	private static final String SCREEN_NAME = "Game Screen";
 
-	private MyGame game;
+	private CaptureTheFlag game;
 
 	private Skin skin;
 	private Stage stage;
@@ -99,7 +102,7 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 	// mapa de juego
 	private GameController gameController = new GameController();
 	
-	public GameScreen(MyGame game) {
+	public GameScreen(CaptureTheFlag game) {
 		this.game = game;
 
 		Gdx.app.log(SCREEN_NAME, "Iniciando screen principal del juego");

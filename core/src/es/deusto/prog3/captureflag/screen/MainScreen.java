@@ -1,4 +1,4 @@
-package com.mygdx.screen;
+package es.deusto.prog3.captureflag.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
@@ -12,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.MyGame;
-import com.mygdx.screen.game.GameScreen;
+
+import es.deusto.prog3.captureflag.CaptureTheFlag;
 
 // Esta clase define la funcionalidad de la pantalla del
 // menú principal
@@ -21,7 +21,7 @@ public class MainScreen extends ScreenAdapter {
 
     // referencia a la aplicación
     // se usa para poder cambiar de pantallas
-    private final MyGame game;
+    private final CaptureTheFlag game;
 
     private Skin skin;
     private Stage stage;
@@ -31,7 +31,7 @@ public class MainScreen extends ScreenAdapter {
 
     private Music music;
 
-    public MainScreen(MyGame game) {
+    public MainScreen(CaptureTheFlag game) {
         this.game = game;
 
         // se hace uso del grafo de escena
@@ -118,7 +118,7 @@ public class MainScreen extends ScreenAdapter {
 
         // pintamos primero el fondo directamente utilizando
         batch.begin();
-        batch.draw(background, 0, 0, MyGame.DEFAULT_WIDTH, MyGame.DEFAULT_HEIGHT);
+        batch.draw(background, 0, 0, CaptureTheFlag.DEFAULT_WIDTH, CaptureTheFlag.DEFAULT_HEIGHT);
         batch.end();
 
         // aquí hacemos uso del grafo de escena para
