@@ -1,4 +1,4 @@
-package com.mygdx.screen.gamemap;
+package com.mygdx.controller;
 
 // contiene la posición de una celda en el mapa
 public class Cell {

@@ -1,4 +1,4 @@
-package com.mygdx.screen.gamemap;
+package com.mygdx.controller;
 
 import java.nio.file.Path;
 import java.io.BufferedReader;

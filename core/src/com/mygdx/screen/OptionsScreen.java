@@ -2,8 +2,6 @@ package com.mygdx.screen;
 
 import com.badlogic.gdx.Gdx;
 
-import java.lang.StackWalker.Option;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -43,9 +41,6 @@ public class OptionsScreen extends ScreenAdapter {
         // distribuir utilizando una tabla que ocupa todo el espacio
         table = new Table();
         table.setFillParent(true);
-
-        // podemos activar esta opción para ver líneas de ayuda
-        //table.setDebug(true);
 
         // añadimos la tabla al grafo de escena
         stage.addActor(table);
