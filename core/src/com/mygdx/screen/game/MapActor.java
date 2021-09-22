@@ -1,15 +1,19 @@
 package com.mygdx.screen.game;
 
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.mygdx.controller.GameController;
+import com.mygdx.controller.GameListener;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.audio.Sound;
 
 import com.mygdx.controller.Cell;
 
 // clase que representa una ctor 
-public class MapActor extends Actor {
+public class MapActor extends Actor implements GameListener {
 
 	// tamaño por defecto del mapa
     private static final int TILE_SIZE = 40;
@@ -31,6 +35,8 @@ public class MapActor extends Actor {
 	private TextureRegion player;
 	private TextureRegion flag;
 
+	private Sound flagPickSound;
+
     public MapActor(GameController gameController) {
         this.gameController = gameController;
 
@@ -42,9 +48,15 @@ public class MapActor extends Actor {
 		flag = getRegion(tileSet, 7, 6);
 		player = getRegion(tileSet, 15, 6);
 
+		flagPickSound = Gdx.audio.newSound(Gdx.files.internal("sound/pick.mp3"));
+
 		// establecemos un tamaño por defecto para el actor
 		setWidth(MAP_WIDTH);
 		setHeight(MAP_HEIGHT);
+
+		// establecemos esta clase como escuchadora de eventos
+		// del controlador del juego
+		gameController.setListener(this);
     }
 
 	// método para obtener la referencia a la región de la textura en
@@ -116,5 +128,11 @@ public class MapActor extends Actor {
 		mountain.getTexture().dispose();
         flag.getTexture().dispose();
 		player.getTexture().dispose();
+		flagPickSound.dispose();
+	}
+
+	@Override
+	public void flagPicked() {
+		flagPickSound.play(1.0f);
 	}
 }

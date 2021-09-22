@@ -56,6 +56,9 @@ public class GameController {
     // random para generar la posición de las banderas
     private Random random = new Random();
 
+    // escuchador para avisar de eventos del juego
+    private GameListener listener = null;
+
     // método para cargar la información del mapa de juego desde
     // fichero
     public void loadFile(Path mapFile) throws IOException {
@@ -182,6 +185,11 @@ public class GameController {
         return flagCounter;
     }
 
+    // método para establecer el escuchador de eventos del juego
+    public void setListener(GameListener listener) {
+        this.listener = listener;
+    }
+
     // enumerado para representar la dirección de movimiento
     // del personaje
     public enum Direction {
@@ -220,6 +228,11 @@ public class GameController {
             // si hay bandera, eliminarla y aumentar el contador
             setCellType(player, CellType.GROUND);
             flagCounter++;
+
+            // se avisa al escuchador si está registrado
+            if (listener != null) {
+                listener.flagPicked();
+            }
         }
     }
 }
