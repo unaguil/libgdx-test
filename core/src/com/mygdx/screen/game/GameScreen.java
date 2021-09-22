@@ -12,14 +12,17 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.mygdx.controller.GameController;
+import com.mygdx.controller.GameListener;
 import com.mygdx.controller.GameController.Direction;
 import com.mygdx.game.MyGame;
 import com.mygdx.screen.MainScreen;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 
-public class GameScreen extends ScreenAdapter {
+public class GameScreen extends ScreenAdapter implements GameListener {
 
 	class KeyboardProcessor extends InputAdapter {
 
@@ -59,8 +62,7 @@ public class GameScreen extends ScreenAdapter {
 				public void result(Object obj) {
 					boolean result = (boolean) obj;
 					if (result) {
-						game.getScreen().dispose();
-						game.setScreen(new MainScreen(game));
+						toMainScreen();
 					}
 				}
 	
@@ -93,6 +95,9 @@ public class GameScreen extends ScreenAdapter {
 	private MapActor mapActor;
 	private PanelActor panelActor;
 	private Group gameGroup;
+
+	private Music music;
+	private Sound flagPickSound;
 
 	// mapa de juego
 	private GameController gameController = new GameController();
@@ -127,6 +132,14 @@ public class GameScreen extends ScreenAdapter {
 
 		stage.addActor(gameGroup);
 
+		// cargamos el recurso de audio para el sonido de la bandera
+		flagPickSound = Gdx.audio.newSound(Gdx.files.internal("sound/pick.mp3"));
+
+		// carga y reproducción en bucle de la música de fondo
+		music = Gdx.audio.newMusic(Gdx.files.internal("music/game-music.mp3"));
+        music.setLooping(true);
+        music.play();
+
 		// establecemos un multiplexador para los eventos
 		// queremos capturar eventos con el stage y con el listener
 		// propio definido anteriormente
@@ -138,6 +151,15 @@ public class GameScreen extends ScreenAdapter {
 		Gdx.input.setInputProcessor(multiplexer);
 
 		gameController.restartMap();
+
+		// establecemos esta clase como escuchadora de eventos
+		// del controlador del juego
+		gameController.setListener(this);
+	}
+
+	public void toMainScreen() {
+		game.getScreen().dispose();
+		game.setScreen(new MainScreen(game));
 	}
 
 	float rotSpeed = 20.0f;
@@ -159,6 +181,36 @@ public class GameScreen extends ScreenAdapter {
 	@Override
 	public void dispose() {
 		mapActor.dispose();
+		panelActor.dispose();
 		stage.dispose();
+		music.dispose();
+		flagPickSound.dispose();
+	}
+
+	@Override
+	public void flagPicked() {
+		flagPickSound.play(1.0f);
+	}
+
+	@Override
+	public void gameFinished() {
+		Dialog dialog = new Dialog("Congratulations!", skin, "dialog") {
+				
+			@Override
+			public void result(Object obj) {
+				boolean result = (boolean) obj;
+				if (result) {
+					gameController.restartMap();
+				} else {
+					toMainScreen();
+				}
+			}
+
+		};
+		
+		dialog.text("You have finished the game! Restart?");
+		dialog.button("Yes", true); //sends "true" as the result
+		dialog.button("No", false); //sends "false" as the result
+		dialog.show(stage);		
 	}
 }

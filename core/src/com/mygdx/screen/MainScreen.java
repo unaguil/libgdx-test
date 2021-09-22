@@ -2,6 +2,7 @@ package com.mygdx.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -27,6 +28,8 @@ public class MainScreen extends ScreenAdapter {
     private Table table;
     private SpriteBatch batch;
     private Texture background;
+
+    private Music music;
 
     public MainScreen(MyGame game) {
         this.game = game;
@@ -96,6 +99,10 @@ public class MainScreen extends ScreenAdapter {
         // creamos un batch para pintar el fondo de la pantalla
         batch = new SpriteBatch();
         background = new Texture("background.jpg");
+
+        music = Gdx.audio.newMusic(Gdx.files.internal("music/main-music.mp3"));
+        music.setLooping(true);
+        music.play();
     }
 
     // este método actualiza el viewport cuando se ajusta
@@ -128,5 +135,6 @@ public class MainScreen extends ScreenAdapter {
         skin.dispose();
         background.dispose();
         batch.dispose();
+        music.dispose();
     }
 }

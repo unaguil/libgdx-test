@@ -40,6 +40,9 @@ public class GameController {
             throw new IllegalArgumentException(String.format("No constant with text '%c' found", c));
         }
     }
+
+    // número de banderas a colocar aleatoriamente en el mapa
+    private static final int NUM_FLAGS = 5;
     
     // array para guardar la información del mapa
 	// establecemos el número de filas de forma temporal
@@ -175,7 +178,7 @@ public class GameController {
     // y la posición del jugador aleatoria
     public void restartMap() {
         clearMap();
-        addRandomFlags(5);
+        addRandomFlags(NUM_FLAGS);
         initPlayer();
         flagCounter = 0;
     }
@@ -233,6 +236,13 @@ public class GameController {
             if (listener != null) {
                 listener.flagPicked();
             }
+        }
+
+        // comprobar si se ha terminado el juego
+        // porque se han recogido todas las banderas
+        // y avisar al escuchador en dicho caso
+        if (listener != null && flagCounter == NUM_FLAGS) {
+            listener.gameFinished();
         }
     }
 }

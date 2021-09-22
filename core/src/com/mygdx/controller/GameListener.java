@@ -4,6 +4,9 @@ package com.mygdx.controller;
 // juego para avisar de eventos
 public interface GameListener {
     
-    // avisa de que se ha recogido una bandera
+    // avisa cuando se recoge una bandera
     public void flagPicked();
+
+    // avisa cuando se recogen todas las banderas
+    public void gameFinished();
 }
