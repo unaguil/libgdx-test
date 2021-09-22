@@ -1,13 +1,11 @@
 package es.deusto.prog3.captureflag.screen;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -58,7 +56,7 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 		// muestra un diálogo para volver a la pantalla principal
 		private void showReturnDialog() {
 		
-			Dialog dialog = new Dialog("Warning", skin, "dialog") {
+			Dialog dialog = new Dialog("Warning", game.getDefaultSkin(), "dialog") {
 				
 				@Override
 				public void result(Object obj) {
@@ -90,7 +88,6 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 
 	private CaptureTheFlag game;
 
-	private Skin skin;
 	private Stage stage;
 	private MapActor mapActor;
 	private PanelActor panelActor;
@@ -111,14 +108,10 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 		
 		// se carga la información del mapa desde fichero 
 		try {
-			gameController.loadFile(Paths.get("map/mapinfo.txt"));
+			gameController.loadFile(Gdx.files.internal("gamescreen/map/mapinfo.txt").reader());
 		} catch (IOException e) {
 			Gdx.app.log(SCREEN_NAME, "Could not load map file information");
 		}
-
-		// los widgets requieren definir con qué imágenes se pinta
-        // aquí se cargan los assets básicos para dibujarlos
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
 
 		// grupo para la pantalla de juego y el panel
 		gameGroup = new Group();
@@ -194,7 +187,7 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 
 	@Override
 	public void gameFinished() {
-		Dialog dialog = new Dialog("Congratulations!", skin, "dialog") {
+		Dialog dialog = new Dialog("Congratulations!", game.getDefaultSkin(), "dialog") {
 				
 			@Override
 			public void result(Object obj) {

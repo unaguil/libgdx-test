@@ -6,7 +6,6 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -22,7 +21,6 @@ public class OptionsScreen extends ScreenAdapter {
     // se usa para poder cambiar de pantallas
     private final CaptureTheFlag game;
 
-    private Skin skin;
     private Stage stage;
     private Table table;
 
@@ -33,10 +31,6 @@ public class OptionsScreen extends ScreenAdapter {
         // para establecer los widgets
         stage = new Stage(game.getViewport());
         Gdx.input.setInputProcessor(stage);
-
-        // los widgets requieren definir con qué imágenes se pinta
-        // aquí se cargan los assets básicos para dibujar los botones
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
         
         // la distribución de los widgets en la pantalla se van a
         // distribuir utilizando una tabla que ocupa todo el espacio
@@ -49,14 +43,14 @@ public class OptionsScreen extends ScreenAdapter {
         // creamos un widget de tipo botón con el skin cargado anteriormente
         // el widget se añade a la tabla con unos tamaños mínimos y con un
         // espacio (padding) superior e inferior para situarlo un poco
-        final CheckBox fullScreenCheck = new CheckBox("Fullscreen", skin);
+        final CheckBox fullScreenCheck = new CheckBox("Fullscreen", game.getDefaultSkin());
 		table.add(fullScreenCheck).minWidth(200).padTop(100).padBottom(25);
 
         // establecemos el check box del modo gráfico al modo actual
         fullScreenCheck.setChecked(game.isFullScreen());
 
         // añadimos un segundo botón para volver al menú principal
-        final TextButton exitButton = new TextButton("Return", skin);
+        final TextButton exitButton = new TextButton("Return", game.getDefaultSkin());
         table.row();
 		table.add(exitButton).minWidth(200);
 
@@ -100,6 +94,5 @@ public class OptionsScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         stage.dispose();
-        skin.dispose();
     }
 }

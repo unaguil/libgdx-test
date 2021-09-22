@@ -1,13 +1,11 @@
 package es.deusto.prog3.captureflag.controller;
 
-import java.nio.file.Path;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.EnumSet;
-import java.io.FileReader;
-
 import java.util.Random;
 
 /**
@@ -64,9 +62,9 @@ public class GameController {
 
     // método para cargar la información del mapa de juego desde
     // fichero
-    public void loadFile(Path mapFile) throws IOException {
+    public void loadFile(Reader fileReader) throws IOException {
         // cargamos el fichero en el array en memoria
-		try (BufferedReader reader = new BufferedReader(new FileReader(mapFile.toFile()))) {
+		try (BufferedReader reader = new BufferedReader(fileReader)) {
 			String line = null;
 
 			int lineCounter = 0;

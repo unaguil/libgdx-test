@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Graphics.Monitor;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import es.deusto.prog3.captureflag.screen.MainScreen;
 
@@ -25,12 +26,19 @@ public class CaptureTheFlag extends Game {
     // viewport utilizado en las diferentes pantallas del juego
     private Viewport viewport;
 
+    // skin para los widgets utilizados en el juego
+    private Skin skin;
+
     // este método se llama cuando se crea la aplicación
     // principal del juego
     @Override
     public void create() {
         // viewport por defecto que puede ser reutilizado
         viewport = new FitViewport(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+
+        // los widgets requieren definir con qué imágenes se pinta
+        // aquí se cargan los assets básicos para dibujar los botones
+        skin = new Skin(Gdx.files.internal("widgets/uiskin.json"));
         
         // se establece la ventana inicial al comenzar
         this.setScreen(new MainScreen(this));
@@ -40,6 +48,12 @@ public class CaptureTheFlag extends Game {
     // diferentes pantallas del juego
     public Viewport getViewport() {
         return viewport;
+    }
+
+    // obtiene el skin por defecto para los widgets de
+    // toda la aplicación
+    public Skin getDefaultSkin() {
+        return skin;
     }
 
     // establece el modo gráfico a ventana completa
@@ -65,5 +79,10 @@ public class CaptureTheFlag extends Game {
     // indica si el modo está establecido en pantalla completa
     public boolean isFullScreen() {
         return fullScreen;
+    }
+
+    @Override
+    public void dispose() {
+        skin.dispose();
     }
 }

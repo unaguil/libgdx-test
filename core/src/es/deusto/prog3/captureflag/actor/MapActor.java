@@ -36,7 +36,7 @@ public class MapActor extends Actor {
         this.gameController = gameController;
 
         // carga de los recursos requeridos para el mapa
-		tileSet = new Texture("map/map-tileset.png");
+		tileSet = new Texture("gamescreen/map/map-tileset.png");
         ground = getRegion(tileSet, 1, 3);
 		tree = getRegion(tileSet, 1, 6);
 		mountain = getRegion(tileSet, 2, 6);

@@ -6,7 +6,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,7 +22,6 @@ public class MainScreen extends ScreenAdapter {
     // se usa para poder cambiar de pantallas
     private final CaptureTheFlag game;
 
-    private Skin skin;
     private Stage stage;
     private Table table;
     private SpriteBatch batch;
@@ -38,10 +36,6 @@ public class MainScreen extends ScreenAdapter {
         // para estabelcer los widgets
         stage = new Stage(game.getViewport());
         Gdx.input.setInputProcessor(stage);
-
-        // los widgets requieren definir con qué imágenes se pinta
-        // aquí se cargan los assets básicos para dibujarlos
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
         
         // la distribución de los widgets en la pantalla se van a
         // distribuir utilizando una tabla que ocupa todo el espacio
@@ -54,7 +48,7 @@ public class MainScreen extends ScreenAdapter {
         // creamos un widget de tipo botón con el skin cargado anteriormente
         // el widget se añade a la tabla con unos tamaños mínimos y con un
         // espacio (padding) superior e inferior para situarlo un poco
-        final TextButton startGameButton = new TextButton("Start game", skin);
+        final TextButton startGameButton = new TextButton("Start game", game.getDefaultSkin());
 		table.add(startGameButton).minWidth(200).padTop(200).padBottom(25);
 
         // escuchador para el click del botón "Start"
@@ -70,7 +64,7 @@ public class MainScreen extends ScreenAdapter {
 		});
 
         // añadimos un botón para cambiar a la pantalla de opciones
-        final TextButton optionsButton = new TextButton("Options", skin);
+        final TextButton optionsButton = new TextButton("Options", game.getDefaultSkin());
         table.row();
 		table.add(optionsButton).minWidth(200).padBottom(25);
 
@@ -84,7 +78,7 @@ public class MainScreen extends ScreenAdapter {
 		});
 
         // añadimos un botón para salir de la aplicación
-        final TextButton exitButton = new TextButton("Exit game", skin);
+        final TextButton exitButton = new TextButton("Exit game", game.getDefaultSkin());
         table.row();
 		table.add(exitButton).minWidth(200);
 
@@ -98,7 +92,7 @@ public class MainScreen extends ScreenAdapter {
 
         // creamos un batch para pintar el fondo de la pantalla
         batch = new SpriteBatch();
-        background = new Texture("background.jpg");
+        background = new Texture("mainscreen/background.jpg");
 
         music = Gdx.audio.newMusic(Gdx.files.internal("music/main-music.mp3"));
         music.setLooping(true);
@@ -132,7 +126,6 @@ public class MainScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         stage.dispose();
-        skin.dispose();
         background.dispose();
         batch.dispose();
         music.dispose();

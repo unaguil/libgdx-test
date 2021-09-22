@@ -28,14 +28,14 @@ public class PanelActor extends Actor {
         this.gameController = gameController;
 
         // cargamos la imagen para el panel
-        panel = new TextureRegion(new Texture("panel.png"));
+        panel = new TextureRegion(new Texture("gamescreen/panel.png"));
 
         // establecemos un tamaño por defecto para el actor
         setWidth(PANEL_WIDTH);
         setHeight(PANEL_HEIGHT);
 
         // cargamos el bitmap de la fuente desde los recursos
-		font = new BitmapFont(Gdx.files.internal("arial.fnt"), false);
+		font = new BitmapFont(Gdx.files.internal("fonts/arial.fnt"), false);
     }
 
     @Override
