@@ -36,7 +36,7 @@ public class MainScreen extends ScreenAdapter {
 
         // se hace uso del grafo de escena
         // para estabelcer los widgets
-        stage = new Stage();
+        stage = new Stage(game.getViewport());
         Gdx.input.setInputProcessor(stage);
 
         // los widgets requieren definir con qué imágenes se pinta
@@ -116,9 +116,9 @@ public class MainScreen extends ScreenAdapter {
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
 
-        // pintamos primer el fondo directamente
+        // pintamos primero el fondo directamente utilizando
         batch.begin();
-        batch.draw(background, 0, 0, 800, 600);
+        batch.draw(background, 0, 0, MyGame.DEFAULT_WIDTH, MyGame.DEFAULT_HEIGHT);
         batch.end();
 
         // aquí hacemos uso del grafo de escena para

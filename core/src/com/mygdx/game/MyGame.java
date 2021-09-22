@@ -4,21 +4,40 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Game;
 import com.mygdx.screen.MainScreen;
 import com.badlogic.gdx.Graphics.Monitor;
-import com.badlogic.gdx.Graphics.DisplayMode;;
+import com.badlogic.gdx.Graphics.DisplayMode;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 // esta clase representa la aplicación del juego
 // permite definir respuestas a distintos eventos
 // aunque solamente 
 public class MyGame extends Game {
 
+    // resolución por defecto del juego en modo ventana
     public static final int DEFAULT_WIDTH = 800;
     public static final int DEFAULT_HEIGHT = 600;
 
+    // indica si el juego se encuentra o no en modo ventana
     private boolean fullScreen = false;
 
+    // viewport utilizado en las diferentes pantallas del juego
+    private Viewport viewport;
+
+    // este método se llama cuando se crea la aplicación
+    // principal del juego
     @Override
     public void create() {
+        // viewport por defecto que puede ser reutilizado
+        viewport = new FitViewport(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        
+        // se establece la ventana inicial al comenzar
         this.setScreen(new MainScreen(this));
+    }
+
+    // permite obtener y reutilizar el mismo viewport en las 
+    // diferentes pantallas del juego
+    public Viewport getViewport() {
+        return viewport;
     }
 
     // establece el modo gráfico a ventana completa
@@ -37,7 +56,7 @@ public class MyGame extends Game {
     // establece el modo en ventana utilizando
     // el modo por defecto
     public void setWindowed() {
-        Gdx.graphics.setWindowedMode(MyGame.DEFAULT_WIDTH, MyGame.DEFAULT_HEIGHT);
+        Gdx.graphics.setWindowedMode(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         fullScreen = false;
     }
 

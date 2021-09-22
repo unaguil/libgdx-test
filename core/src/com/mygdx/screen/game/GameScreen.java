@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.mygdx.controller.GameController;
 import com.mygdx.controller.GameListener;
 import com.mygdx.controller.GameController.Direction;
@@ -85,8 +84,6 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 	}
 
 	private static final String SCREEN_NAME = "Game Screen";
-	private static final int GAME_WIDTH = 800;
-	private static final int GAME_HEIGHT = 600;
 
 	private MyGame game;
 
@@ -107,7 +104,7 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 
 		Gdx.app.log(SCREEN_NAME, "Iniciando screen principal del juego");
 
-		stage = new Stage(new ExtendViewport(GAME_WIDTH, GAME_HEIGHT));
+		stage = new Stage(game.getViewport());
 		
 		// se carga la información del mapa desde fichero 
 		try {

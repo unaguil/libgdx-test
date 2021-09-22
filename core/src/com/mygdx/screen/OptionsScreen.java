@@ -29,8 +29,8 @@ public class OptionsScreen extends ScreenAdapter {
         this.game = game;
 
         // se hace uso del grafo de escena
-        // para estabelcer los widgets
-        stage = new Stage();
+        // para establecer los widgets
+        stage = new Stage(game.getViewport());
         Gdx.input.setInputProcessor(stage);
 
         // los widgets requieren definir con qué imágenes se pinta
