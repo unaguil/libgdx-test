@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -24,8 +24,8 @@ public class MainScreen extends ScreenAdapter {
 
     private Stage stage;
     private Table table;
-    private SpriteBatch batch;
-    private Texture background;
+    private Image background;
+    private Texture backImage;
 
     private Music music;
 
@@ -36,10 +36,20 @@ public class MainScreen extends ScreenAdapter {
         // para estabelcer los widgets
         stage = new Stage(game.getViewport());
         Gdx.input.setInputProcessor(stage);
+
+        // añadimos el fondo a la escena con un widget Image
+        backImage = new Texture("mainscreen/background.jpg");
+        background = new Image(backImage);
+        stage.addActor(background);
+
+        // queremos que la imagen llene toda la pantalla
+        background.setFillParent(true);
         
         // la distribución de los widgets en la pantalla se van a
         // distribuir utilizando una tabla que ocupa todo el espacio
         table = new Table();
+
+        // la tabla ajusta a toda la pantalla
         table.setFillParent(true);
 
         // añadimos la tabla al grafo de escena
@@ -90,10 +100,6 @@ public class MainScreen extends ScreenAdapter {
             
 		});
 
-        // creamos un batch para pintar el fondo de la pantalla
-        batch = new SpriteBatch();
-        background = new Texture("mainscreen/background.jpg");
-
         music = Gdx.audio.newMusic(Gdx.files.internal("music/main-music.mp3"));
         music.setLooping(true);
         music.play();
@@ -110,14 +116,11 @@ public class MainScreen extends ScreenAdapter {
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
 
-        // pintamos primero el fondo directamente utilizando
-        batch.begin();
-        batch.draw(background, 0, 0, CaptureTheFlag.DEFAULT_WIDTH, CaptureTheFlag.DEFAULT_HEIGHT);
-        batch.end();
-
         // aquí hacemos uso del grafo de escena para
         // los widgets
         stage.act(delta);
+
+        // ahora dibujamos el escenario
         stage.draw();
     }
 
@@ -126,8 +129,7 @@ public class MainScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         stage.dispose();
-        background.dispose();
-        batch.dispose();
+        backImage.dispose();
         music.dispose();
     }
 }
