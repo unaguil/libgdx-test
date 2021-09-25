@@ -60,6 +60,10 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 				
 				@Override
 				public void result(Object obj) {
+					// se elimina el diálogo del stage
+					this.remove();
+
+					// se comprueba la opción elegida por el usuario
 					boolean result = (boolean) obj;
 					if (result) {
 						toMainScreen();
@@ -203,6 +207,11 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 				
 			@Override
 			public void result(Object obj) {
+				// se elimina el diálogo del stage
+				this.remove();
+
+				// se comprueba la opción elegida por
+				// el usuario
 				boolean result = (boolean) obj;
 				if (result) {
 					gameController.restartMap();
