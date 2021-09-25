@@ -103,8 +103,6 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 		this.game = game;
 
 		Gdx.app.log(SCREEN_NAME, "Iniciando screen principal del juego");
-
-		stage = new Stage(game.getViewport());
 		
 		// se carga la información del mapa desde fichero 
 		try {
@@ -113,16 +111,25 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 			Gdx.app.log(SCREEN_NAME, "Could not load map file information");
 		}
 
+		// creamos el stage para esta pantalla
+		// se le añade el viewport por defecto para
+		// toda la aplicación. Este viewport gestiona
+		// como se transforman las coordenadas a pantalla.
+		stage = new Stage(game.getViewport());
+
 		// grupo para la pantalla de juego y el panel
 		gameGroup = new Group();
 
+		// se añade al grupo un actor que representa al mapa
 		mapActor = new MapActor(gameController);
 		gameGroup.addActor(mapActor);
 
+		// se añade un actor que representa el panel de la derecha
 		panelActor = new PanelActor(gameController);
 		panelActor.setX(mapActor.getWidth());
 		gameGroup.addActor(panelActor);
 
+		// se añade el grupo al escenario
 		stage.addActor(gameGroup);
 
 		// cargamos el recurso de audio para el sonido de la bandera
@@ -162,7 +169,11 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 		// borrado de pantalla para empezar a dibujar
 		ScreenUtils.clear(0, 0, 0, 1);
 
+		// en el método render se dice a los actores que
+		// actuen.
 		stage.act(delta);
+
+		// se pinta la jerarquía del escenario
 		stage.draw();
 	}
 	
@@ -173,6 +184,7 @@ public class GameScreen extends ScreenAdapter implements GameListener {
 
 	@Override
 	public void dispose() {
+		// liberamos los recursos utilizados
 		mapActor.dispose();
 		panelActor.dispose();
 		stage.dispose();
