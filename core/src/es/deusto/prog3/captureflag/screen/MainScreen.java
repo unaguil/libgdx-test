@@ -2,6 +2,7 @@ package es.deusto.prog3.captureflag.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -11,12 +12,30 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 
 import es.deusto.prog3.captureflag.CaptureTheFlag;
 
 // Esta clase define la funcionalidad de la pantalla del
 // menú principal
 public class MainScreen extends ScreenAdapter {
+
+    class KeyboardProcessor extends InputAdapter {
+        
+        @Override
+		public boolean keyUp(int key) {
+            switch (key) {
+                case Keys.C:    game.dispose();
+                                game.setScreen(new Demo3DScreen());
+                                break;
+
+                default:        break;
+            }
+
+            return false;
+        }
+    }
 
     // referencia a la aplicación
     // se usa para poder cambiar de pantallas
@@ -103,6 +122,13 @@ public class MainScreen extends ScreenAdapter {
         music = Gdx.audio.newMusic(Gdx.files.internal("music/main-music.mp3"));
         music.setLooping(true);
         music.play();
+
+        InputMultiplexer multiplexer = new InputMultiplexer();
+		multiplexer.addProcessor(stage);
+		multiplexer.addProcessor(new KeyboardProcessor());
+
+		// registramos el multiplexador de eventos como escuchador
+		Gdx.input.setInputProcessor(multiplexer);
     }
 
     // este método actualiza el viewport cuando se ajusta
